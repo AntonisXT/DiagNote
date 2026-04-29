@@ -1,0 +1,30 @@
+# Applied when building backend/Dockerfile (Docker 25+ named .dockerignore)
+# Keeps the backend build context lean — only requirements.txt + backend/ are needed.
+
+# Python artefacts
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.pytest_cache/
+
+# Secrets — never bake into the image
+.env
+.env.*
+.env.local
+.env.*.local
+
+# Entire frontend directory — irrelevant for the Python image
+frontend/
+
+# Infrastructure / dev files
+docker-compose.yml
+.github/
+*.md
+.git/
+.gitignore
+.claude/
+.vercel/

@@ -1,0 +1,46 @@
+version: "3.9"
+
+# Copy .env.local to .env at the project root and populate the variables below
+# before running `docker compose up --build`.
+
+services:
+
+  # ── FastAPI backend ──────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .                      # project root — needs requirements.txt
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      OPENAI_API_KEY:  ${OPENAI_API_KEY}
+      CLERK_JWKS_URL:  ${CLERK_JWKS_URL}
+      # Leave DATABASE_URL unset to fall back to SQLite, or supply a Postgres URL:
+      # DATABASE_URL: postgresql+psycopg2://user:pass@db:5432/dictamd
+      DATABASE_URL:    ${DATABASE_URL:-}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ── Next.js frontend ─────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Build-time: inlined into the client bundle and Next.js rewrites config
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+        FASTAPI_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+    environment:
+      # Runtime secrets read server-side by Clerk middleware
+      CLERK_SECRET_KEY:                  ${CLERK_SECRET_KEY}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
