@@ -7,6 +7,7 @@ import Head from 'next/head';
 import AppLayout from '../components/AppLayout';
 import DatePicker from 'react-datepicker';
 import { toast } from 'sonner';
+import { apiUrl } from '../lib/api';
 import {
   Calendar, Plus, Trash2, Loader2,
   Clock, AlertCircle, CalendarDays, X, Check,
@@ -49,8 +50,8 @@ function AppointmentsContent() {
     try {
       const jwt = await getToken();
       const [apptRes, patientsRes] = await Promise.all([
-        fetch('/api/appointments', { headers: { Authorization: `Bearer ${jwt ?? ''}` } }),
-        fetch('/api/patients',     { headers: { Authorization: `Bearer ${jwt ?? ''}` } }),
+        fetch(apiUrl('/api/appointments'), { headers: { Authorization: `Bearer ${jwt ?? ''}` } }),
+        fetch(apiUrl('/api/patients'),     { headers: { Authorization: `Bearer ${jwt ?? ''}` } }),
       ]);
       if (apptRes.ok)     setAppointments(await apptRes.json() as AppointmentRecord[]);
       if (patientsRes.ok) setPatients(await patientsRes.json() as Patient[]);
@@ -68,7 +69,7 @@ function AppointmentsContent() {
     setDeletingId(id);
     try {
       const jwt = await getToken();
-      const res = await fetch(`/api/appointments/${id}`, {
+      const res = await fetch(apiUrl(`/api/appointments/${id}`), {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${jwt ?? ''}` },
       });
@@ -89,7 +90,7 @@ function AppointmentsContent() {
     setSaving(true);
     try {
       const jwt = await getToken();
-      const res = await fetch('/api/appointments', {
+      const res = await fetch(apiUrl('/api/appointments'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt ?? ''}` },
         body: JSON.stringify({

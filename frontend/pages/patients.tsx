@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import AppLayout from '../components/AppLayout';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
+import { apiUrl } from '../lib/api';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
@@ -190,7 +191,7 @@ function PatientRecordsContent() {
     setError('');
     try {
       const jwt = await getToken();
-      const res = await fetch('/api/patients', { headers: { Authorization: `Bearer ${jwt ?? ''}` } });
+      const res = await fetch(apiUrl('/api/patients'), { headers: { Authorization: `Bearer ${jwt ?? ''}` } });
       if (!res.ok) throw new Error();
       setPatients(await res.json() as Patient[]);
     } catch {
@@ -207,8 +208,8 @@ function PatientRecordsContent() {
       try {
         const jwt = await getToken();
         const [analyticsRes, apptRes] = await Promise.all([
-          fetch('/api/analytics',    { headers: { Authorization: `Bearer ${jwt ?? ''}` } }),
-          fetch('/api/appointments', { headers: { Authorization: `Bearer ${jwt ?? ''}` } }),
+          fetch(apiUrl('/api/analytics'),    { headers: { Authorization: `Bearer ${jwt ?? ''}` } }),
+          fetch(apiUrl('/api/appointments'), { headers: { Authorization: `Bearer ${jwt ?? ''}` } }),
         ]);
         if (analyticsRes.ok) setAnalytics(await analyticsRes.json() as Analytics);
         if (apptRes.ok)      setAppointments(await apptRes.json() as AppointmentRecord[]);
@@ -230,7 +231,7 @@ function PatientRecordsContent() {
     chatAbortRef.current = controller;
     let buffer = '';
     try {
-      await fetchEventSource(`/api/patients/${selected.id}/chat`, {
+      await fetchEventSource(apiUrl(`/api/patients/${selected.id}/chat`), {
         signal: controller.signal,
         method: 'POST',
         headers: {
@@ -258,7 +259,7 @@ function PatientRecordsContent() {
 
   const removeAppointment = async (appointmentId: number) => {
     const jwt = await getToken();
-    const res = await fetch(`/api/appointments/${appointmentId}`, {
+    const res = await fetch(apiUrl(`/api/appointments/${appointmentId}`), {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${jwt ?? ''}` },
     });
@@ -275,7 +276,7 @@ function PatientRecordsContent() {
     setDeletingPatientId(patient.id);
     try {
       const jwt = await getToken();
-      const res = await fetch(`/api/patients/${patient.id}`, {
+      const res = await fetch(apiUrl(`/api/patients/${patient.id}`), {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${jwt ?? ''}` },
       });
@@ -295,7 +296,7 @@ function PatientRecordsContent() {
 
   const deleteConsultation = async (consultationId: number) => {
     const jwt = await getToken();
-    const res = await fetch(`/api/consultations/${consultationId}`, {
+    const res = await fetch(apiUrl(`/api/consultations/${consultationId}`), {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${jwt ?? ''}` },
     });
@@ -319,7 +320,7 @@ function PatientRecordsContent() {
     setConsultationsLoading(true);
     try {
       const jwt = await getToken();
-      const res = await fetch(`/api/consultations/${patient.id}`, {
+      const res = await fetch(apiUrl(`/api/consultations/${patient.id}`), {
         headers: { Authorization: `Bearer ${jwt ?? ''}` },
       });
       if (!res.ok) throw new Error();

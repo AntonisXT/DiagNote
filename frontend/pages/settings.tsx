@@ -11,6 +11,7 @@ import {
   Key, Eye, EyeOff, ShieldCheck, Trash2, CreditCard, Zap,
 } from 'lucide-react';
 import { useApiKey } from '../hooks/useApiKey';
+import { apiUrl } from '../lib/api';
 import { useProStatus } from '../hooks/useProStatus';
 
 interface SettingsData {
@@ -262,7 +263,7 @@ function SettingsContent() {
     (async () => {
       try {
         const jwt = await getToken();
-        const res = await fetch('/api/settings', { headers: { Authorization: `Bearer ${jwt ?? ''}` } });
+        const res = await fetch(apiUrl('/api/settings'), { headers: { Authorization: `Bearer ${jwt ?? ''}` } });
         if (!res.ok) throw new Error();
         setData(await res.json() as SettingsData);
       } catch {
@@ -282,7 +283,7 @@ function SettingsContent() {
     setSaving(true);
     try {
       const jwt = await getToken();
-      const res = await fetch('/api/settings', {
+      const res = await fetch(apiUrl('/api/settings'), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt ?? ''}` },
         body: JSON.stringify(data),

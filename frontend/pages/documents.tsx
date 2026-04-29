@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { apiUrl } from '../lib/api';
 import AppLayout from '../components/AppLayout';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -119,7 +120,7 @@ export default function DocumentsPage() {
   const fetchDocs = useCallback(async () => {
     try {
       const jwt = await getToken();
-      const res = await fetch('/api/documents', {
+      const res = await fetch(apiUrl('/api/documents'), {
         headers: { Authorization: `Bearer ${jwt ?? ''}` },
       });
       if (!res.ok) throw new Error();
@@ -137,7 +138,7 @@ export default function DocumentsPage() {
   const deleteDoc = async (id: number) => {
     try {
       const jwt = await getToken();
-      const res = await fetch(`/api/documents/${id}`, {
+      const res = await fetch(apiUrl(`/api/documents/${id}`), {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${jwt ?? ''}` },
       });

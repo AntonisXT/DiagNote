@@ -22,6 +22,7 @@ import {
   Paperclip, X, CalendarPlus, Calendar,
 } from 'lucide-react';
 import { useApiKey, getApiKey } from '../hooks/useApiKey';
+import { apiUrl } from '../lib/api';
 
 const TiptapEditor = dynamic(() => import('../components/TiptapEditor'), {
   ssr: false,
@@ -441,7 +442,7 @@ function ConsultationForm() {
     (async () => {
       try {
         const jwt = await getToken();
-        const res = await fetch('/api/settings', { headers: { Authorization: `Bearer ${jwt ?? ''}` } });
+        const res = await fetch(apiUrl('/api/settings'), { headers: { Authorization: `Bearer ${jwt ?? ''}` } });
         if (res.ok) {
           const data = await res.json() as DoctorProfile & { custom_instruction: string };
           setDoctorProfile({
@@ -495,7 +496,7 @@ function ConsultationForm() {
           const fd = new FormData();
           fd.append('file', blob, 'recording.webm');
           const key = getApiKey();
-          const res = await fetch('/api/transcribe', {
+          const res = await fetch(apiUrl('/api/transcribe'), {
             method: 'POST',
             headers: {
               Authorization: `Bearer ${jwt ?? ''}`,
@@ -566,7 +567,7 @@ function ConsultationForm() {
     setSaving(true);
     try {
       const jwt = await getToken();
-      const res = await fetch('/api/consultations', {
+      const res = await fetch(apiUrl('/api/consultations'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt ?? ''}` },
         body: JSON.stringify({
@@ -617,7 +618,7 @@ function ConsultationForm() {
     let buffer = '';
 
     try {
-      await fetchEventSource('/api', {
+      await fetchEventSource(apiUrl('/api'), {
         signal: controller.signal,
         method: 'POST',
         headers: {

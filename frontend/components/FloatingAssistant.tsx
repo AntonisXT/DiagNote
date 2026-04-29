@@ -8,6 +8,7 @@ import remarkGfm from 'remark-gfm';
 import { Sparkles, X, Send, Loader2, RotateCcw, Mic, MicOff, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { getApiKey } from '../hooks/useApiKey';
+import { apiUrl } from '../lib/api';
 import { useProStatus } from '../hooks/useProStatus';
 import UpgradeModal from './UpgradeModal';
 
@@ -63,7 +64,7 @@ export default function FloatingAssistant() {
           const key = getApiKey();
           const fd = new FormData();
           fd.append('file', blob, 'recording.webm');
-          const res = await fetch('/api/transcribe', {
+          const res = await fetch(apiUrl('/api/transcribe'), {
             method: 'POST',
             headers: {
               Authorization: `Bearer ${jwt ?? ''}`,
@@ -115,7 +116,7 @@ export default function FloatingAssistant() {
       const jwt = await getToken();
       const payload = history.filter(m => m !== WELCOME).map(m => ({ role: m.role, content: m.content }));
 
-      await fetchEventSource('/api/assistant', {
+      await fetchEventSource(apiUrl('/api/assistant'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import AppLayout from '../components/AppLayout';
 import { toast } from 'sonner';
+import { apiUrl } from '../lib/api';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -129,7 +130,7 @@ export default function AnalyticsPage() {
     (async () => {
       try {
         const jwt = await getToken();
-        const res = await fetch(`/api/analytics?period=${period}`, {
+        const res = await fetch(apiUrl(`/api/analytics?period=${period}`), {
           headers: { Authorization: `Bearer ${jwt ?? ''}` },
         });
         if (!res.ok) throw new Error();
