@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+openai
+fastapi-clerk-auth
+pydantic
+python-multipart
+sqlalchemy
+python-dotenv
+psycopg2-binary
