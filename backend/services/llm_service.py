@@ -1,7 +1,7 @@
 import re
 from openai import OpenAI
 from fastapi.responses import StreamingResponse
-from backend.clients import openai_client
+from backend.clients import get_openai_client
 from backend.schemas import Visit
 
 _PII_PATTERNS = [
@@ -114,8 +114,8 @@ def _mock_sse_stream(text: str) -> StreamingResponse:
     return StreamingResponse(event_stream(), media_type="text/event-stream")
 
 
-def _get_client(api_key: str | None) -> OpenAI:
-    return OpenAI(api_key=api_key) if api_key else openai_client
+def _get_client(api_key: str | None) -> OpenAI | None:
+    return get_openai_client(api_key)
 
 
 def _mask_pii(text: str, patient_name: str) -> str:
@@ -187,10 +187,9 @@ def _user_prompt_for(visit: Visit) -> str:
 
 
 def stream_consultation(visit: Visit, custom_instruction: str = "", api_key: str | None = None) -> StreamingResponse:
-    if not api_key:
-        return _mock_sse_stream(_MOCK_CONSULTATION)
-
     client = _get_client(api_key)
+    if client is None:
+        return _mock_sse_stream(_MOCK_CONSULTATION)
     user_text = _user_prompt_for(visit)
     if visit.image_base64:
         user_content: list | str = [
@@ -220,12 +219,11 @@ def stream_consultation(visit: Visit, custom_instruction: str = "", api_key: str
 
 
 def stream_patient_chat(system_content: str, message: str, api_key: str | None = None) -> StreamingResponse:
-    if not api_key:
+    client = _get_client(api_key)
+    if client is None:
         return _mock_sse_stream(
             "**Demo mode** — add your OpenAI API key on the Consultation page to enable real patient history chat."
         )
-
-    client = _get_client(api_key)
     openai_stream = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
@@ -238,10 +236,9 @@ def stream_patient_chat(system_content: str, message: str, api_key: str | None =
 
 
 def stream_assistant(messages: list[dict], api_key: str | None = None) -> StreamingResponse:
-    if not api_key:
-        return _mock_sse_stream(_MOCK_ASSISTANT)
-
     client = _get_client(api_key)
+    if client is None:
+        return _mock_sse_stream(_MOCK_ASSISTANT)
     full_messages = [{"role": "system", "content": _ASSISTANT_SYSTEM}] + messages
     openai_stream = client.chat.completions.create(
         model="gpt-4o", messages=full_messages, stream=True
