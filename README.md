@@ -322,6 +322,8 @@ FASTAPI_URL=http://localhost:8000
 # Production only - direct backend URL for client-side fetch
 NEXT_PUBLIC_FASTAPI_URL=https://your-backend.onrender.com
 ```
+
+> **Note:** If `DATABASE_URL` is not set, the backend automatically falls back to a local SQLite file at `api/dev.db` - no setup needed for local development.
  
 ---
  
