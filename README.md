@@ -66,11 +66,11 @@ DiagNote is a **unified AI-powered Clinical Management Workspace** that covers t
 
 Everything a clinician needs, in one place:
 
-- **AI Clinical Documentation.** Raw consultation notes are structured in real time, streamed live via GPT-4o.
+- **AI Clinical Documentation.** Real-time voice dictation is instantly transcribed and converted into structured consultation notes, streamed live via GPT-4o.
 - **Electronic Health Records.** A searchable, chronological patient database with full consultation history and AI-assisted patient chat.
 - **Appointment Scheduling.** Book, manage, and track appointments directly within the patient record.
 - **Practice Analytics.** Visit trends, ICD-10 frequency, language distribution, and document volume, configurable by time period.
-- **Clinical AI Assistant.** A persistent, context-aware assistant for ICD-10 lookups, drug interactions, clinical scoring, and document templates.
+- **Clinical AI Assistant.** A versatile medical companion ready to support any clinical query, diagnostic task, or daily workflow.
 
 All output is streamed in real time, editable in a rich-text editor, and exportable to PDF or DOCX.
 
